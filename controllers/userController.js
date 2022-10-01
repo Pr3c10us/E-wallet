@@ -1,7 +1,15 @@
-// Import Dependencies
+//Import tools
+const jwt = require('jsonwebtoken');
+const {
+    unAuthorizedError,
+    badRequestError,
+} = require('../errors');
+// Import models
 const User = require('../models/userModel');
 const Wallet = require('../models/walletModel');
-const { Hash } = require('../utils/Hash');
+// Import Utils
+const { Hash, isMatch } = require('../utils/Hash');
+const { createAndSendToken } = require('../utils/Token');
 
 const Register = async (req, res) => {
     // hash password
@@ -16,11 +24,47 @@ const Register = async (req, res) => {
         Pin: req.body.Pin,
     });
 
-    // console.log(req.body.Pin);
+    // Create and Send a Token
+    await createAndSendToken(user, wallet, res);
+
+    res.json({ msg: 'Account created successfully' });
 };
 
-const Login = (req, res) => {
-    res.send('Login');
+const Login = async (req, res) => {
+    // Check if email and password is present
+    let { Email, Password } = req.body;
+    if (!Email || !Password) {
+        throw new badRequestError(
+            `Email or Password is missing`
+        );
+    }
+
+    // Check if user with email specified exist
+    const user = await User.findOne({
+        Email,
+    });
+    if (!user) {
+        throw new unAuthorizedError(
+            `User with email ${req.body.Email} does not exist `
+        );
+    }
+
+    // Check if password is correct
+    await isMatch(
+        Password,
+        user.Password,
+        'Password is incorrect'
+    );
+
+    // Get wallet info
+    const wallet = await Wallet.findOne({
+        UserId: user._id,
+    });
+
+    // Create and Send a Token
+    await createAndSendToken(user, wallet, res);
+
+    res.json({ msg: 'Successfully Loged In' });
 };
 
 const Logout = (req, res) => {

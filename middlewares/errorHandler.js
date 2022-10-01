@@ -1,4 +1,13 @@
+const { customError } = require('../errors');
+
 const errorHandler = (error, req, res, next) => {
+    // if error is a custom error
+    if (error instanceof customError) {
+        return res
+            .status(error.statusCode)
+            .json({ msg: error.message });
+    }
+
     // if error is a ValidationError respond with BadReqErr and error message
     if (error.name === 'ValidationError') {
         return res.status(400).json({

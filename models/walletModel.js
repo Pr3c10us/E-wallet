@@ -5,7 +5,7 @@ const Schema = new mongoose.Schema({
         type: mongoose.Schema.ObjectId,
         ref: 'User',
         required: [true, 'Please add a user'],
-        unique: [true, 'Email already exists'],
+        unique: [true, 'User already has a wallet'],
     },
     Balance: {
         type: Number,

@@ -2,6 +2,7 @@
 require('dotenv').config();
 require('express-async-errors');
 const mongoose = require('mongoose');
+const cookieParser = require('cookie-parser');
 
 // Import Express
 const express = require('express');
@@ -14,6 +15,7 @@ const userRoutes = require('./routes/userRoutes');
 //
 // Middleware
 app.use(express.json());
+app.use(cookieParser(process.env.jwt_secret));
 
 // Routes
 app.use('/api/user', userRoutes);
