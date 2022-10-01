@@ -3,13 +3,13 @@ const mongoose = require('mongoose');
 const Schema = new mongoose.Schema({
     Firstname: {
         type: String,
-        required: [true, 'Please add a name'],
+        required: [true, 'Please add a Firstname'],
         min: [3, 'Name must be at least 3 characters'],
         max: [20, 'Name must be less than 20 characters'],
     },
-    Secondname: {
+    Lastname: {
         type: String,
-        required: [true, 'Please add a name'],
+        required: [true, 'Please add a  Lastname'],
         min: [3, 'Name must be at least 3 characters'],
         max: [20, 'Name must be less than 20 characters'],
     },
@@ -22,8 +22,8 @@ const Schema = new mongoose.Schema({
             'Please add a valid email',
         ],
     },
-    Phonenumber: {
-        type: Number,
+    Phone_number: {
+        type: String,
         required: [true, 'Please add a phone number'],
         unique: [true, 'Phone number already exists'],
         min: [
