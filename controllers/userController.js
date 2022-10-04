@@ -1,5 +1,4 @@
 //Import tools
-const jwt = require('jsonwebtoken');
 const {
     unAuthorizedError,
     badRequestError,
@@ -18,10 +17,29 @@ const Register = async (req, res) => {
     // Create user
     const user = await User.create(req.body);
 
+    // Get 10 digits random number and check if it exist
+    let AccountNumber = Math.floor(
+        1000000000 + Math.random() * 9000000000
+    ).toString();
+    let accountExist = await Wallet.findOne({
+        AccountNumber,
+    });
+    while (accountExist) {
+        AccountNumber = Math.floor(
+            1000000000 + Math.random() * 9000000000
+        ).toString();
+        accountExist = await Wallet.findOne({
+            AccountNumber,
+        });
+    }
+    
+    // Hash pin
+    req.body.Pin = Hash(req.body.Pin.toString());
     // Create wallet
     const wallet = await Wallet.create({
         UserId: user._id,
         Pin: req.body.Pin,
+        AccountNumber: AccountNumber,
     });
 
     // Create and Send a Token
@@ -68,11 +86,32 @@ const Login = async (req, res) => {
 };
 
 const Logout = (req, res) => {
-    res.send('Logout');
+    res.cookie('Token', '', {
+        expires: new Date(Date.now() + 1000),
+    }).json({ msg: 'Successfully Logged Out!!!' });
+};
+
+const deleteUser = async (req, res) => {
+    const deletedUser = await User.findOneAndDelete({
+        Email: req.body.Email,
+    });
+
+    const deletedWallet = await Wallet.findOneAndDelete({
+        UserId: deletedUser._id,
+    });
+
+    if (!deletedUser) {
+        throw new unAuthorizedError(
+            `User with email ${req.body.Email} does not exist `
+        );
+    }
+
+    res.json({ msg: 'User deleted successfully' });
 };
 
 module.exports = {
     Register,
     Login,
     Logout,
+    deleteUser,
 };

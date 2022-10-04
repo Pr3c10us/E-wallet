@@ -21,6 +21,13 @@ const Schema = new mongoose.Schema({
         min: [4, 'Pin must be at least 4 characters'],
         max: [4, 'Pin must be less than 4 characters'],
     },
+    AccountNumber: {
+        type: String,
+        required: [true, 'Please add an account number'],
+        unique: [true, 'Account number already exist'],
+        min: [10, 'Pin must be at least 10 characters'],
+        max: [10, 'Pin must be less than 10 characters'],
+    },
 });
 
 module.exports = mongoose.model('Wallet', Schema);

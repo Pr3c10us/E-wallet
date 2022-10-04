@@ -22,7 +22,20 @@ const Schema = new mongoose.Schema({
             'Please add a valid email',
         ],
     },
-    Phone_number: {
+    // Phonenumber: {
+    //     type: String,
+    //     required: [true, 'Please add a phone number'],
+    //     unique: [true, 'Phone number already exists'],
+    //     min: [
+    //         11,
+    //         'Phone number must be at least 11 characters',
+    //     ],
+    //     max: [
+    //         11,
+    //         'Phone number must be less than 11 characters',
+    //     ],
+    // },
+    MobileNumber: {
         type: String,
         required: [true, 'Please add a phone number'],
         unique: [true, 'Phone number already exists'],
@@ -35,6 +48,7 @@ const Schema = new mongoose.Schema({
             'Phone number must be less than 11 characters',
         ],
     },
+
     Password: {
         type: String,
         required: [true, 'Please add a password'],

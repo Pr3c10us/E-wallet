@@ -10,15 +10,17 @@ const Schema = new mongoose.Schema({
         required: [true, 'Please add a description'],
         default: 'Nil',
     },
-    CreditedWallet: {
+    CreditedAccount: {
         type: mongoose.Schema.ObjectId,
-        ref: 'Wallet',
         required: [true, 'Please add a wallet'],
+        min: [10, 'Pin must be at least 10 characters'],
+        max: [10, 'Pin must be less than 10 characters'],
     },
-    DebitedWallet: {
+    DebitedAccount: {
         type: mongoose.Schema.ObjectId,
-        ref: 'Wallet',
         required: [true, 'Please add a wallet'],
+        min: [10, 'Pin must be at least 10 characters'],
+        max: [10, 'Pin must be less than 10 characters'],
     },
     CreatedAt: {
         type: Date,
@@ -26,4 +28,12 @@ const Schema = new mongoose.Schema({
     },
 });
 
-module.exports = mongoose.model('Transaction', Schema);
+
+
+
+
+const Transaction = mongoose.model('Transaction', Schema);
+
+module.exports = {
+    Transaction,
+}

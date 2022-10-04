@@ -6,9 +6,10 @@ const {
     Register,
     Login,
     Logout,
+    deleteUser,
 } = require('../controllers/userController');
 
-router.route('/register').post(Register);
+router.route('/register').post(Register).delete(deleteUser);
 router.route('/login').post(Login);
 router.route('/logout').get(Logout);
 

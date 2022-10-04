@@ -11,6 +11,7 @@ const app = express();
 
 // Import routes
 const userRoutes = require('./routes/userRoutes');
+const transactionRoutes = require('./routes/transactionRoute');
 
 //
 // Middleware
@@ -19,6 +20,7 @@ app.use(cookieParser(process.env.jwt_secret));
 
 // Routes
 app.use('/api/user', userRoutes);
+app.use('/api/transaction/', transactionRoutes);
 
 // Setup for root url
 app.get('/', (req, res) => {
