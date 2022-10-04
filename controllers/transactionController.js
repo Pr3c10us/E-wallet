@@ -19,9 +19,26 @@ const transfer = async (req, res) => {
 
     // Get User information
     const { WalletId } = req.user;
-
     // Get Senderwallet info
     const wallet = await Wallet.findById(WalletId);
+
+    // Check if AccountNumber is the same as the user's account number
+    if (wallet.AccountNumber === AccountNumber) {
+        throw new badRequestError(
+            'You cannot transfer to your own account'
+        );
+    }
+
+    // Check if Pin is correct
+    await isMatch(Pin, wallet.Pin, 'Incorrect Pin');
+
+    if (Amount > wallet.Balance) {
+        throw new badRequestError('Insufficient Balance');
+    }
+
+    // Remove Amount from user(sender) wallet
+    wallet.Balance = wallet.Balance - Amount;
+    await wallet.save();
 
     // Get info about reciever wallet
     const RecieverWallet = await Wallet.findOne({
@@ -33,14 +50,6 @@ const transfer = async (req, res) => {
             'Account Number does not exist'
         );
     }
-
-    // Check if Pin is correct
-    await isMatch(Pin, wallet.Pin, 'Incorrect Pin');
-
-    // Remove Amount from user(sender) wallet
-    wallet.Balance = +wallet.Balance - +Amount;
-    await wallet.save();
-
     // Add Amount to reciever Account
     RecieverWallet.Balance =
         +RecieverWallet.Balance + +Amount;
@@ -56,6 +65,57 @@ const transfer = async (req, res) => {
     res.json({ transaction });
 };
 
+const getTransactions = async (req, res) => {
+    // Get User wallet Id
+    const { WalletId } = req.user;
+
+    // Get query parameters
+    const { transactionType, startDate, endDate } =
+        req.query;
+
+    // Set filter to an empty object
+    let filter = {};
+
+    // Set filter for both transaction types if transactionType is not provided
+    if (!transactionType) {
+        filter.$or = [
+            { CreditedAccount: WalletId },
+            { DebitedAccount: WalletId },
+        ];
+    }
+    // Set filter for either credit or debit transactions
+    if (transactionType === 'credit') {
+        filter.CreditedAccount = WalletId;
+    }
+    if (transactionType === 'debit') {
+        filter.DebitedAccount = WalletId;
+    }
+
+    // Set filter for startDate if provided
+    if (startDate) {
+        filter.CreatedAt = { $gte: startDate };
+    }
+
+    // Set filter for endDate if provided
+    if (endDate) {
+        filter.CreatedAt = { $lt: endDate };
+    }
+
+    //Get all Transactions associated to user wallet based on filter
+    const transactions = await Transaction.find(
+        filter
+    ).sort('CreatedAt');
+
+    // Filter transactions based on start and end date
+
+    // Respond with all transactions
+    res.json({
+        nbHits: transactions.length,
+        transactions,
+    });
+};
+
 module.exports = {
     transfer,
+    getTransactions,
 };
