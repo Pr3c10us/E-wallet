@@ -57,11 +57,12 @@ const transfer = async (req, res) => {
 
     // Create a transaction
     // Append createdAccount and DebitedAccount to request body
-    req.body.CreditedAccount = WalletId;
-    req.body.DebitedAccount = RecieverWallet._id;
+    req.body.CreditedAccount = RecieverWallet._id;
+    req.body.DebitedAccount = WalletId;
     const transaction = await Transaction.create(req.body);
 
     // Respond with transaction details
+    transaction.Amount = -transaction.Amount;
     res.json({ transaction });
 };
 
@@ -106,7 +107,15 @@ const getTransactions = async (req, res) => {
         filter
     ).sort('CreatedAt');
 
-    // Filter transactions based on start and end date
+    // if transaction is a debit transaction,display the amount as negative in response
+    transactions.forEach((transaction) => {
+        if (
+            transaction.DebitedAccount.toString() ===
+            WalletId.toString()
+        ) {
+            transaction.Amount = -transaction.Amount;
+        }
+    });
 
     // Respond with all transactions
     res.json({

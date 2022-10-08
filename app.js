@@ -3,6 +3,7 @@ require('dotenv').config();
 require('express-async-errors');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
+const cors = require('cors');
 
 // Import Express
 const express = require('express');
@@ -12,15 +13,18 @@ const app = express();
 // Import routes
 const userRoutes = require('./routes/userRoutes');
 const transactionRoutes = require('./routes/transactionRoute');
+const topUpRoutes = require('./routes/topUpRoute');
 
 //
 // Middleware
 app.use(express.json());
+app.use(cors());
 app.use(cookieParser(process.env.jwt_secret));
 
 // Routes
 app.use('/api/user', userRoutes);
 app.use('/api/transaction/', transactionRoutes);
+app.use('/api/topUp/', topUpRoutes);
 
 // Setup for root url
 app.get('/', (req, res) => {

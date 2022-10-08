@@ -12,13 +12,13 @@ const Schema = new mongoose.Schema({
     },
     CreditedAccount: {
         type: mongoose.Schema.ObjectId,
-        required: [true, 'Please add a wallet'],
+        required: [true, 'Please add a Credit wallet'],
         min: [10, 'Pin must be at least 10 characters'],
         max: [10, 'Pin must be less than 10 characters'],
     },
     DebitedAccount: {
         type: mongoose.Schema.ObjectId,
-        required: [true, 'Please add a wallet'],
+        required: [true, 'Please add a Debit wallet'],
         min: [10, 'Pin must be at least 10 characters'],
         max: [10, 'Pin must be less than 10 characters'],
     },
@@ -28,12 +28,8 @@ const Schema = new mongoose.Schema({
     },
 });
 
-
-
-
-
 const Transaction = mongoose.model('Transaction', Schema);
 
 module.exports = {
     Transaction,
-}
+};
