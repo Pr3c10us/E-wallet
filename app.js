@@ -27,7 +27,7 @@ app.use('/api/transaction/', transactionRoutes);
 app.use('/api/topUp/', topUpRoutes);
 
 // Setup for root url
-app.get('/', (req, res) => {
+app.get('/', async (req, res) => {
     res.json({ msg: 'Hi' });
 });
 

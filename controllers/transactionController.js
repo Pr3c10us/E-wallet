@@ -1,5 +1,6 @@
-// Import wallet Models and joi schema
+// Import Models and joi schema
 const Wallet = require('../models/walletModel');
+const User = require('../models/userModel');
 const {
     Transaction,
 } = require('../models/transactionModel');
@@ -55,14 +56,31 @@ const transfer = async (req, res) => {
         +RecieverWallet.Balance + +Amount;
     await RecieverWallet.save();
 
+    // Get info about reciever user
+    const RecieverUser = await User.findOne({
+        _id: RecieverWallet.UserId,
+    });
+    // Get info about sender user
+    const SenderUser = await User.findOne({
+        _id: wallet.UserId,
+    });
+
     // Create a transaction
     // Append createdAccount and DebitedAccount to request body
     req.body.CreditedAccount = RecieverWallet._id;
     req.body.DebitedAccount = WalletId;
+    req.body.CreditedAccountFullName = `${RecieverUser.Firstname} ${RecieverUser.Lastname}`;
+    req.body.DebitedAccountFullName = `${SenderUser.Firstname} ${SenderUser.Lastname}`;
+    req.body.CreditedAccountNumber =
+        RecieverWallet.AccountNumber;
+    req.body.DebitedAccountNumber = wallet.AccountNumber;
+    req.body.CreditedBank = 'E-Wal';
+    req.body.DebitedBank = 'E-Wal';
+    req.body.TransactionType = 'Transfer';
+
     const transaction = await Transaction.create(req.body);
 
     // Respond with transaction details
-    transaction.Amount = -transaction.Amount;
     res.json({ transaction });
 };
 

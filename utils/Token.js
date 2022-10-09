@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 
 const createAndSendToken = async (user, wallet, res) => {
     // Destructure user and wallet data
-    const { _id: UserId, Firstname, Lastname } = user;
+    const { _id: UserId, Email } = user;
     const {
         _id: WalletId,
         Balance,
@@ -17,8 +17,7 @@ const createAndSendToken = async (user, wallet, res) => {
     const payLoad = {
         UserId,
         WalletId,
-        Firstname,
-        Lastname,
+        Email,
         Balance,
         AccountNumber,
     };

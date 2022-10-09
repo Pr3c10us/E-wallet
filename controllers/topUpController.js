@@ -9,6 +9,7 @@ const {
 } = require('../models/transactionModel');
 const Wallet = require('../models/walletModel');
 
+// Top up wallet controller
 const topUp = async (req, res) => {
     // Get user id from params
     const { id } = req.params;
@@ -22,17 +23,16 @@ const topUp = async (req, res) => {
             },
         }
     );
-
     if (!data.status) {
         return res.status(400).json({
             msg: 'Transaction failed',
         });
     }
+
     // Check if customer email is in the database
     const userExist = await User.findOne({
         Email: data.data.customer.email,
     });
-
     // If user is not in the database refund the transaction
     if (!userExist) {
         await refund(id, data, res);
@@ -56,6 +56,13 @@ const topUp = async (req, res) => {
             Description: 'Top up',
             CreditedAccount: wallet._id,
             DebitedAccount: '6341e3ba64f3f1fc8cc46de0',
+            CreditedAccountFullName: `${userExist.Firstname} ${userExist.Lastname}`,
+            DebitedAccountFullName: 'Paystack',
+            CreditedAccountNumber: wallet.AccountNumber,
+            DebitedAccountNumber: '0000000000',
+            CreditedBank: 'E-Wal',
+            DebitedBank: 'Paystack',
+            TransactionType: 'Top Up',
         };
         await Transaction.create(transaction);
 
@@ -66,12 +73,6 @@ const topUp = async (req, res) => {
     }
 };
 
-const webhook = async (req, res) => {
-    console.log(req.body);
-    res.status(200);
-};
-
 module.exports = {
     topUp,
-    webhook,
 };

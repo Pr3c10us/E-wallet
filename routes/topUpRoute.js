@@ -1,7 +1,6 @@
 // Import topUp controller
 const {
     topUp,
-    webhook,
 } = require('../controllers/topUpController');
 
 // Import router
